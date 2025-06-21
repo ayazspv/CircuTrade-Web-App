@@ -1,17 +1,18 @@
 <script setup>
 
 import AppLayout from './layouts/AppLayout.vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute();
 
 </script>
 
 <template>
 
   <AppLayout>
-    <h1>I can do it</h1>
+    <router-view />
   </AppLayout>
 
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
