@@ -1,29 +1,35 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../pages/Home.vue';
-import MaterialList from '../pages/MaterialList.vue';
-import MaterialInfoPage from '../pages/MaterialInfoPage.vue';
-import NotFound from '../pages/404.vue';
+import Home from '../views/Home.vue';
+import MaterialList from '../views/Materials.vue';
+import MaterialInfoPage from '../views/MaterialDetail.vue';
+import NotFound from '../views/404.vue';
+import Login from '../components/Auth/Login.vue';
+import Register from '../components/Auth/Register.vue';
 
 const routes = [
     {
-        path: '/', 
-        name: "Home", 
-        component: Home
+        path: '/',
+        name: 'Home',
+        component: Home,
+        meta: { layout: 'AppLayout' }
     },
     {
-        path: '/materials',
-        name: "MaterialList",
-        component: MaterialList
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: NotFound,
+        meta: { layout: 'none' }
     },
     {
-        path: '/materials/:id',
-        name: "MaterialInfoPage",
-        component: MaterialInfoPage
+        path: '/login',
+        name: 'Login',
+        component: Login,
+        meta: { layout: 'AuthLayout' }
     },
     {
-        path: "/:pathMatch(.*)*",
-        name: "PageNotFound",
-        component: NotFound
+        path: '/register',
+        name: 'Register',
+        component: Register,
+        meta: { layout: 'AuthLayout' }
     },
 ]
 
