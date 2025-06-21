@@ -1,0 +1,33 @@
+# Node dependencies (frontend and possibly backend)
+**/node_modules/
+**/dist/
+**/build/
+
+# PHP Composer dependencies
+**/vendor/
+
+# Environment files
+**/.env
+
+# Logs
+**/storage/logs/
+*.log
+
+# IDEs and editors
+.vscode/
+.idea/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Docker volumes (if you use any bind-mounts or named volumes with state)
+db_data/
+*.pid
+
+# PHPUnit / test output (optional)
+**/phpunit.xml
+**/coverage/
+
+# Nginx config cache (if generated dynamically)
+n

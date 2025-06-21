@@ -1,0 +1,26 @@
+# PHP dependencies
+/vendor/
+
+# Environment config
+.env
+
+# Logs
+*.log
+storage/logs/
+
+# Cache / temp
+cache/
+*.cache
+*.tmp
+
+# Node modules (if you use Node in backend)
+node_modules/
+
+# PHPUnit or test artifacts (if applicable)
+phpunit.xml
+coverage/
+
+# IDE/editor files
+.idea/
+.vscode/
+*.swp
