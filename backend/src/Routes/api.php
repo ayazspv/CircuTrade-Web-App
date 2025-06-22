@@ -1,4 +1,11 @@
 <?php
+
+$allowedOrigins = [
+    'http://localhost:5173'
+];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 $router = new \Bramus\Router\Router();
