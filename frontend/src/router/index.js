@@ -1,10 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
-import MaterialList from '../views/Materials.vue';
-import MaterialInfoPage from '../views/MaterialDetail.vue';
 import NotFound from '../views/404.vue';
 import Login from '../components/Auth/Login.vue';
 import Register from '../components/Auth/Register.vue';
+import ManagerOrders from '../components/Admin/ManagerOrders.vue';
+import ManagerUsers from '../components/Admin/ManagerUsers.vue';
+import ManagerMaterials from '../components/Admin/ManagerMaterials.vue';
+import ManagerDashboard from '@/components/Admin/ManagerDashboard.vue';
+import UserDashboard from '@/components/User/UserDashboard.vue';
 
 const routes = [
     {
@@ -31,7 +34,45 @@ const routes = [
         component: Register,
         meta: { layout: 'AuthLayout' }
     },
+    {
+        path: '/dashboard',
+        meta: { layout: 'DashboardLayout' },
+        children: [
+            {
+                path: '',
+                name: 'Dashboard',
+                component: ManagerDashboard,
+                meta: { layout: 'DashboardLayout', isManager: true },
+            },
+            {
+                path: 'materials',
+                name: 'DashboardMaterials',
+                component: ManagerMaterials,
+                meta: { layout: 'DashboardLayout', isManager: true },
+            },
+            {
+                path: 'orders',
+                name: 'DashboardOrders',
+                component: ManagerOrders,
+                meta: { layout: 'DashboardLayout', isManager: true },
+            },
+            {
+                path: 'users',
+                name: 'DashboardUsers',
+                component: ManagerUsers,
+                meta: { layout: 'DashboardLayout', isManager: true },
+            },
+            {
+                path: 'userId',
+                name: 'UserDashboard',
+                component: UserDashboard,
+                meta: { layout: 'DashboardLayout', isManager: false },
+            },
+        ]
+    },
+
 ]
+
 
 const router = createRouter({
     history: createWebHistory(),
