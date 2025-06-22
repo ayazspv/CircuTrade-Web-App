@@ -10,6 +10,9 @@ import ManagerUsers from '../components/Admin/ManagerUsers.vue';
 import ManagerMaterials from '../components/Admin/ManagerMaterials.vue';
 import ManagerDashboard from '@/components/Admin/ManagerDashboard.vue';
 import UserDashboard from '@/components/User/UserDashboard.vue';
+import Cart from  '@/components/Cart/Cart.vue';
+import Checkout from '@/components/Cart/Checkout.vue';
+import OrderSuccess from '@/components/Cart/OrderSuccess.vue';
 
 const routes = [
     {
@@ -80,7 +83,7 @@ const routes = [
                 path: '',
                 name: 'Materials',
                 component: Materials,
-                meta: { layout: 'AppLayout'}
+                meta: { layout: 'AppLayout' }
             },
             {
                 path: 'item',
@@ -89,6 +92,24 @@ const routes = [
                 meta: { layout: 'AppLayout' }
             }
         ]
+    },
+    {
+        path: '/cart',
+        name: 'Cart',
+        component: Cart,
+        meta: { layout: '' }
+    },
+    {
+        path: '/checkout',
+        name: 'Checkout',
+        component: Checkout,
+        meta: { layout: '' }
+    },
+    {
+        path: '/order-success',
+        name: 'OrderSuccess',
+        component: OrderSuccess,
+        meta: { layout: 'none' }
     },
 
 ]
