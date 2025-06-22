@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import NotFound from '../views/404.vue';
+import Materials from '../views/Materials.vue'
+import MaterialDetail from '../views/MaterialDetail.vue'
 import Login from '../components/Auth/Login.vue';
 import Register from '../components/Auth/Register.vue';
 import ManagerOrders from '../components/Admin/ManagerOrders.vue';
@@ -68,6 +70,24 @@ const routes = [
                 component: UserDashboard,
                 meta: { layout: 'DashboardLayout', isManager: false },
             },
+        ]
+    },
+    {
+        path: '/materials',
+        meta: { layout: 'AppLayout' },
+        children: [
+            {
+                path: '',
+                name: 'Materials',
+                component: Materials,
+                meta: { layout: 'AppLayout'}
+            },
+            {
+                path: 'item',
+                name: 'MaterialDetail',
+                component: MaterialDetail,
+                meta: { layout: 'AppLayout' }
+            }
         ]
     },
 

@@ -8,12 +8,12 @@ const route = useRoute();
 
 </script>
 <template>
-
-    <Header />
-    <main class="d-flex flex-column">
-        <slot />
-    </main>
-    <Footer />
-
+    <div class="d-flex flex-column">
+        <Header />
+        <main class="d-flex flex-column">
+            <slot />
+        </main>
+        <Footer />
+    </div>
 </template>
 <style scoped></style>
