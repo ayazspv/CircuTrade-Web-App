@@ -37,7 +37,7 @@
       </div>
       <div class="col-md-6 text-center">
         <div class="mx-auto position-relative d-inline-block" style="max-width:340px;">
-          <img src="../../images/img2.jpeg" alt="Onze Missie" class="img-fluid rounded-4 shadow-lg border border-4 border-white" />
+          <img src="#" alt="Onze Missie" class="img-fluid rounded-4 shadow-lg border border-4 border-white" />
           <div class="position-absolute top-50 start-50 translate-middle effect"></div>
         </div>
       </div>
