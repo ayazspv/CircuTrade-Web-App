@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install Node.js (latest LTS)
+# Install Node.js (optional for your backend)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
@@ -26,10 +26,11 @@ WORKDIR /var/www/backend
 COPY ./backend /var/www/backend
 
 # Install PHP and Node dependencies
-RUN composer install
-RUN npm install
+RUN composer install || true
+RUN [ -f package.json ] && npm install || true
 
-# Expose port for built-in server if needed
+# Expose PHP built-in server port
 EXPOSE 8000
 
-CMD ["php-fpm"]
+# Start PHP built-in server
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "."]

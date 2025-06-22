@@ -24,7 +24,7 @@ class JWTController extends BaseController {
         return \Firebase\JWT\JWT::encode($payload, $secret_key, 'HS256');
     }
 
-    protected function checkForJwt()
+    public function checkForJwt()
     {
         $headers = getallheaders();
         if (!isset($headers['Authorization'])) {

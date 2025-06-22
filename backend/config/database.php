@@ -1,6 +1,6 @@
 <?php
 class Database {
-    private $host = "mysql";
+    private $host = "db";
     private $db_name = "CircuTrade";
     private $username = "dbmanager";
     private $password = "dbpassword";
