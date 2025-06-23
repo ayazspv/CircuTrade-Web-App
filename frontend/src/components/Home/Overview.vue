@@ -1,12 +1,44 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useMaterialStore } from '@/stores/materialStore'
 
-const cities = ref([
-  { name: 'Amsterdam', emoji: '🟢', color: '#27ae60', count: 874 },
-  { name: 'Rotterdam', emoji: '🔵', color: '#2980b9', count: 612 },
-  { name: 'The Hague', emoji: '🟡', color: '#f1c40f', count: 528 },
-  { name: 'Utrecht', emoji: '🟣', color: '#8e44ad', count: 417 },
-])
+const materialStore = useMaterialStore()
+
+onMounted(async () => {
+  if (!materialStore.materials.length) {
+    await materialStore.fetchMaterials()
+  }
+})
+
+// Compute city stats dynamically
+const cityStats = computed(() => {
+  // Group materials by city
+  const cityMap = {}
+  for (const m of materialStore.materials) {
+    const city = m.location || m.city
+    if (!city) continue
+    if (!cityMap[city]) {
+      cityMap[city] = { count: 0, name: city }
+    }
+    cityMap[city].count += 1
+  }
+  // Convert to array and sort by count descending, then take top 4
+  const sortedCities = Object.values(cityMap)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 4)
+  // Add emoji and color for known cities, fallback for others
+  const cityMeta = {
+    Amsterdam: { emoji: '🟢', color: '#27ae60' },
+    Rotterdam: { emoji: '🔵', color: '#2980b9' },
+    'The Hague': { emoji: '🟡', color: '#f1c40f' },
+    Utrecht: { emoji: '🟣', color: '#8e44ad' }
+  }
+  return sortedCities.map(city => ({
+    ...city,
+    emoji: cityMeta[city.name]?.emoji || '🏙️',
+    color: cityMeta[city.name]?.color || '#4f8cff'
+  }))
+})
 
 function filterByCity(cityName) {
   // Implement your filter logic here
@@ -28,7 +60,7 @@ function filterByCity(cityName) {
     </div>
     <div class="row g-4">
       <div
-        v-for="city in cities"
+        v-for="city in cityStats"
         :key="city.name"
         class="col-12 col-sm-6 col-md-3"
       >

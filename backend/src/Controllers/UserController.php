@@ -9,7 +9,6 @@ use Services\UserService;
 class UserController extends BaseController
 {
     private $userService;
-    private $jwtController;
 
     public function __construct()
     {
@@ -40,14 +39,14 @@ class UserController extends BaseController
             'id' => $user->getId(),
             'token' => $token,
             'userEmail' => $user->getEmail(),
-            'userType' => method_exists($user->getRole(), 'value') ? $user->getRole()->value : (string) $user->getRole()
+            'userType' => $user->getRole()->value // <-- fix here
         ];
 
         // Respond with the payload
         $this->respond($response);
     }
 
-    public function register($user)
+    public function register()
     {
         try {
             // Retrieve and decode JSON payload
@@ -98,10 +97,11 @@ class UserController extends BaseController
         }
     }
 
-    public function addUser($user)
+    public function addUser()
     {
         try {
-            $result = $this->userService->addUser($user);
+            $data = $this->getRequestData();
+            $result = $this->userService->addUser($data);
             if ($result) {
                 $this->respond(['success' => true, 'user' => $result]);
             } else {
@@ -142,12 +142,9 @@ class UserController extends BaseController
 
     public function getAllUsers()
     {
-        try {
-            $users = $this->userService->getAllUsers();
-            $this->respond($users);
-        } catch (\PDOException $e) {
-            $this->respondWithError(500, $e->getMessage());
-        }
+        $user = $this->getUserFromJwt();
+        $users = $this->userService->getAllUsers();
+        $this->respond($users);
     }
 
     public function getLatestUser()
@@ -167,7 +164,7 @@ class UserController extends BaseController
 
     public static function test() {
         error_log("✅ /api/test route hit");
-    header('Content-Type: application/json');
+    header('Content-Type', 'application/json');
     echo json_encode(['message' => '✅ It works!']);
     }
 }

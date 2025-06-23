@@ -1,23 +1,15 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useMaterialStore } from '../stores/materialStore'
+import { useCartStore } from '../stores/cartStore'
 
-// Simulate fetching material by ID (replace with real API call)
 const route = useRoute()
-const loading = ref(false)
-
-  const material = {
-    id: '1',
-    name: 'Steel Beams',
-    description: 'High-quality steel beams for construction.',
-    price: 30,
-    quantity: 40,
-    seller: 'WideVend',
-    date: '14 March 2025',
-    status: 'In Stock',
-    location: 'Amsterdam',
-    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80'
-}
+const router = useRouter()
+const materialStore = useMaterialStore()
+const cartStore = useCartStore()
+const loading = ref(true)
+const material = ref(null)
 
 const formatPrice = (price) => {
   return new Intl.NumberFormat('nl-NL', {
@@ -27,6 +19,17 @@ const formatPrice = (price) => {
   }).format(price)
 }
 
+onMounted(async () => {
+  loading.value = true
+  const id = route.params.id
+  material.value = await materialStore.fetchMaterialById(id)
+  loading.value = false
+})
+
+function addToCart() {
+  cartStore.addToCart(material.value)
+  router.push('/cart')
+}
 </script>
 
 <template>
@@ -65,7 +68,7 @@ const formatPrice = (price) => {
           <strong>Date:</strong>
           <span class="fs-5 ms-2">{{ material.date }}</span>
         </div>
-        <button class="btn btn-gradient px-4 py-2 fs-6">
+        <button class="btn btn-gradient px-4 py-2 fs-6" @click="addToCart">
           <i class="fas fa-cart-plus me-2"></i>Add to the cart
         </button>
       </div>

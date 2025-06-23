@@ -1,43 +1,49 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useMaterialStore } from '@/stores/materialStore'
 import MaterialForm from './MaterialForm.vue'
 
-const items = ref([
-    { name: "Steel Beams", quantity: 40, status: "Active" },
-    { name: "Wood Panels", quantity: 22, status: "Active" },
-    { name: "Copper Wires", quantity: 66, status: "Inactive" }
-])
-
+const materialStore = useMaterialStore()
 const showForm = ref(false)
 const formMode = ref('add') // 'add' or 'edit'
 const selectedMaterial = ref(null)
 
+onMounted(async () => {
+  if (!materialStore.materials.length) {
+    await materialStore.fetchMaterials()
+  }
+})
+
+const items = computed(() => materialStore.materials)
+
 function openAddForm() {
-    formMode.value = 'add'
-    selectedMaterial.value = null
-    showForm.value = true
+  formMode.value = 'add'
+  selectedMaterial.value = null
+  showForm.value = true
 }
 
 function openEditForm(item) {
-    formMode.value = 'edit'
-    selectedMaterial.value = { ...item }
-    showForm.value = true
+  formMode.value = 'edit'
+  selectedMaterial.value = { ...item }
+  showForm.value = true
 }
 
-function handleFormSubmit(material) {
-    if (formMode.value === 'add') {
-        items.value.push(material)
-    } else if (formMode.value === 'edit') {
-        const idx = items.value.findIndex(i => i.name === selectedMaterial.value.name)
-        if (idx !== -1) items.value[idx] = material
-    }
-    showForm.value = false
+async function handleFormSubmit(material) {
+  if (formMode.value === 'add') {
+    await materialStore.addMaterial(material)
+  } else if (formMode.value === 'edit') {
+    await materialStore.editMaterial(selectedMaterial.value.id, material)
+  }
+  await materialStore.fetchMaterials()
+  showForm.value = false
 }
 
-function handleDelete(item) {
-    items.value = items.value.filter(i => i.name !== item.name)
+async function handleDelete(item) {
+  await materialStore.deleteMaterial(item.id)
+  await materialStore.fetchMaterials()
 }
 </script>
+
 <template>
     <!-- Items & Materials Section -->
     <section class="mb-5">
@@ -55,24 +61,34 @@ function handleDelete(item) {
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
+                            <th>ID</th>
                             <th>Name</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Seller</th>
                             <th>Quantity</th>
                             <th>Status</th>
+                            <th>Location</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in items" :key="item.name">
+                        <tr v-for="item in items" :key="item.id">
+                            <td>{{ item.id }}</td>
                             <td class="fw-semibold">{{ item.name }}</td>
+                            <td>{{ item.description }}</td>
+                            <td>€{{ item.price }}</td>
+                            <td>{{ item.seller }}</td>
                             <td>
                                 <span class="badge bg-gradient-primary fs-6 px-3 py-2">{{ item.quantity }}</span>
                             </td>
                             <td>
                                 <span
-                                    :class="item.status === 'Active' ? 'badge bg-success-soft text-success' : 'badge bg-secondary-soft text-secondary'">
+                                    :class="item.status === 'In Stock' ? 'badge bg-success-soft text-success' : 'badge bg-secondary-soft text-secondary'">
                                     {{ item.status }}
                                 </span>
                             </td>
+                            <td>{{ item.location }}</td>
                             <td>
                                 <button class="btn btn-sm btn-outline-secondary me-2" @click="openEditForm(item)">
                                     <i class="fas fa-edit"></i>

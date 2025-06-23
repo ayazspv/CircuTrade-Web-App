@@ -8,12 +8,20 @@ class MaterialRepository extends Repository {
 
     public function addMaterial($material) {
         try {
-            $stmt = $this->connection->prepare("INSERT INTO materials (name, description, city, quantity, stock) VALUES (:name, :description, :city, :quantity, :stock)");
+            $stmt = $this->connection->prepare("
+                INSERT INTO materials 
+                    (name, description, price, quantity, seller, status, location, image)
+                VALUES 
+                    (:name, :description, :price, :quantity, :seller, :status, :location, :image)
+            ");
             $stmt->bindParam(':name', $material->name);
             $stmt->bindParam(':description', $material->description);
-            $stmt->bindParam(':city', $material->city);
+            $stmt->bindParam(':price', $material->price);
             $stmt->bindParam(':quantity', $material->quantity);
-            $stmt->bindParam(':stock', $material->stock);
+            $stmt->bindParam(':seller', $material->seller);
+            $stmt->bindParam(':status', $material->status);
+            $stmt->bindParam(':location', $material->location);
+            $stmt->bindParam(':image', $material->image);
             $stmt->execute();
             return $this->getMaterialById($this->connection->lastInsertId());
         } catch (\PDOException $e) {
@@ -23,13 +31,27 @@ class MaterialRepository extends Repository {
 
     public function editMaterial($material) {
         try {
-            $stmt = $this->connection->prepare("UPDATE materials SET name = :name, description = :description, city = :city, quantity = :quantity, stock = :stock WHERE id = :id");
+            $stmt = $this->connection->prepare("
+                UPDATE materials SET 
+                    name = :name,
+                    description = :description,
+                    price = :price,
+                    quantity = :quantity,
+                    seller = :seller,
+                    status = :status,
+                    location = :location,
+                    image = :image
+                WHERE id = :id
+            ");
             $stmt->bindParam(':id', $material->id);
             $stmt->bindParam(':name', $material->name);
             $stmt->bindParam(':description', $material->description);
-            $stmt->bindParam(':city', $material->city);
+            $stmt->bindParam(':price', $material->price);
             $stmt->bindParam(':quantity', $material->quantity);
-            $stmt->bindParam(':stock', $material->stock);
+            $stmt->bindParam(':seller', $material->seller);
+            $stmt->bindParam(':status', $material->status);
+            $stmt->bindParam(':location', $material->location);
+            $stmt->bindParam(':image', $material->image);
             return $stmt->execute();
         } catch (\PDOException $e) {
             return false;

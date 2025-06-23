@@ -1,11 +1,22 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
+
 const props = defineProps({
   menu: {
     type: Array,
     required: true
   }
 })
+
+const userStore = useUserStore()
+const router = useRouter()
+
+function handleLogout() {
+  userStore.logout()
+  router.push('/login')
+}
 </script>
 
 <template>
@@ -13,6 +24,13 @@ const props = defineProps({
     <aside class="sidebar d-flex flex-column">
       <div class="sidebar-logo d-flex align-items-center justify-content-center mb-4">
         <i class="fas fa-leaf fa-2x text-success"></i>
+      </div>
+      <!-- Home Button -->
+      <div class="w-100 px-3 mb-3">
+        <router-link to="/" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2">
+          <i class="fas fa-home"></i>
+          <span class="sidebar-label d-none d-md-inline">Home</span>
+        </router-link>
       </div>
       <nav class="nav flex-column align-items-center flex-grow-1 w-100">
         <router-link
@@ -27,7 +45,10 @@ const props = defineProps({
         </router-link>
       </nav>
       <div class="sidebar-logout w-100 px-3 pb-3 mt-auto">
-        <button class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-2">
+        <button
+          class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-2"
+          @click="handleLogout"
+        >
           <i class="fas fa-sign-out-alt"></i>
           <span class="sidebar-label d-none d-md-inline">Logout</span>
         </button>

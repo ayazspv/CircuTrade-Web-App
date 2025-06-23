@@ -12,7 +12,7 @@
     <div class="row align-items-center position-relative" style="z-index:2;">
       <div class="col-md-6 text-center text-md-start mb-4 mb-md-0">
         <h2 class="fw-bold mb-3 lh-1">
-          <span class="px-3 py-1 rounded-pill text-white head-text">Onze Missie</span>
+          <span class="px-3 py-1 rounded-pill text-white head-text">Our Mission</span>
         </h2>
         <p class="lead mb-4 fst-italic fw-semibold">
           <span class="d-inline-block px-4 py-2 rounded-pill subhead-text">“Empowering a circular future, one material at a time.”</span>
@@ -37,7 +37,7 @@
       </div>
       <div class="col-md-6 text-center">
         <div class="mx-auto position-relative d-inline-block" style="max-width:340px;">
-          <img src="#" alt="Onze Missie" class="img-fluid rounded-4 shadow-lg border border-4 border-white" />
+          <img src="#" alt="Our Mission" class="img-fluid rounded-4 shadow-lg border border-4 border-white" />
           <div class="position-absolute top-50 start-50 translate-middle effect"></div>
         </div>
       </div>

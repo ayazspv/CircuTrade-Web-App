@@ -1,11 +1,36 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useMaterialStore } from '@/stores/materialStore'
+import { useUserStore } from '@/stores/userStore'
+
 const search = ref('')
 const location = ref('')
+
+const materialStore = useMaterialStore()
+const userStore = useUserStore()
+
+onMounted(async () => {
+  if (!materialStore.materials.length) {
+    await materialStore.fetchMaterials()
+  }
+  if (!userStore.users.length) {
+    await userStore.fetchAllUsers()
+  }
+})
+
+const materialsReused = computed(() => materialStore.materials.length)
+const activeUsers = computed(() => userStore.users.length)
+const citiesConnected = computed(() => {
+  // Get unique cities from materials
+  const cities = materialStore.materials
+    .map(m => m.location || m.city)
+    .filter(Boolean)
+  return new Set(cities).size
+})
+
 function onSearch(e) {
-    e.preventDefault()
-    // Add your search logic here
-    alert(`Searching for: ${search.value} in ${location.value || 'all locations'}`)
+  e.preventDefault()
+  alert(`Searching for: ${search.value} in ${location.value || 'all locations'}`)
 }
 </script>
 
@@ -54,17 +79,17 @@ function onSearch(e) {
             <div class="d-flex flex-wrap justify-content-center gap-4 mt-5">
                 <div class="stat-card bg-white bg-opacity-75 px-4 py-3 rounded-4 shadow text-center">
                     <i class="fas fa-recycle text-success fa-lg mb-1"></i>
-                    <div class="fw-bold">1200+</div>
+                    <div class="fw-bold">{{ materialsReused }}</div>
                     <div class="stat-label text-secondary">Materials Reused</div>
                 </div>
                 <div class="stat-card bg-white bg-opacity-75 px-4 py-3 rounded-4 shadow text-center">
                     <i class="fas fa-users text-primary fa-lg mb-1"></i>
-                    <div class="fw-bold">350+</div>
+                    <div class="fw-bold">{{ activeUsers }}</div>
                     <div class="stat-label text-secondary">Active Users</div>
                 </div>
                 <div class="stat-card bg-white bg-opacity-75 px-4 py-3 rounded-4 shadow text-center">
                     <i class="fas fa-globe-europe text-warning fa-lg mb-1"></i>
-                    <div class="fw-bold">18</div>
+                    <div class="fw-bold">{{ citiesConnected }}</div>
                     <div class="stat-label text-secondary">Cities Connected</div>
                 </div>
             </div>

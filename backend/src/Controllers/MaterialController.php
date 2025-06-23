@@ -2,21 +2,18 @@
 
 namespace Controllers;
 
+require_once __DIR__ . '/BaseController.php';
+require_once __DIR__ . '/../Services/MaterialService.php';
 use Controllers\BaseController;
 use Controllers\JWTController;
 use Services\MaterialService;
 
 class MaterialController extends BaseController {
     private $materialService;
-    private $jwtController;
 
     public function __construct() {
         $this->materialService = new MaterialService();
         $this->jwtController = new JWTController();
-    }
-
-    private function getUserFromJwt() {
-        return $this->jwtController->checkForJwt();
     }
 
     public function addMaterial() {
@@ -33,8 +30,8 @@ class MaterialController extends BaseController {
     public function editMaterial($id) {
         $user = $this->getUserFromJwt();
         $data = $this->getRequestData();
-        $data['id'] = $id;
-        $result = $this->materialService->editMaterial((object)$data);
+        $data->id = $id;
+        $result = $this->materialService->editMaterial($data);
         if ($result) {
             $this->respond(['success' => true]);
         } else {
@@ -69,7 +66,6 @@ class MaterialController extends BaseController {
     }
 
     public function getAllMaterials() {
-        
         $materials = $this->materialService->getAllMaterials();
         $this->respond($materials);
     }

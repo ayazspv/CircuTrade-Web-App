@@ -2,8 +2,16 @@
 
 namespace Controllers;
 
+use Controllers\JWTController;
+
 abstract class BaseController
 {
+    protected $jwtController;
+
+    protected function getUserFromJwt() {
+        return $this->jwtController->checkForJwt();
+    }
+
     protected function respond($data)
     {
         $this->respondWithCode(200, $data);

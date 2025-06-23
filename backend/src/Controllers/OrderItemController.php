@@ -3,20 +3,14 @@
 namespace Controllers;
 
 use Controllers\BaseController;
-use Controllers\JWTController;
 use Services\OrderItemService;
 
 class OrderItemController extends BaseController {
     private $orderItemService;
-    private $jwtController;
 
     public function __construct() {
         $this->orderItemService = new OrderItemService();
         $this->jwtController = new JWTController();
-    }
-
-    private function getUserFromJwt() {
-        return $this->jwtController->checkForJwt();
     }
 
     public function getAllOrderItems() {

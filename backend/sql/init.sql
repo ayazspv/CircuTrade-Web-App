@@ -25,7 +25,7 @@ CREATE TABLE materials (
     description TEXT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     quantity INT NOT NULL,
-    seller INT NOT NULL,
+    seller VARCHAR(100) NOT NULL,
     status ENUM('In Stock', 'Out of Stock') DEFAULT 'In Stock',
     location VARCHAR(100) NOT NULL,
     image VARCHAR(255) NOT NULL,
@@ -54,9 +54,9 @@ CREATE TABLE orderitems (
 );
 
 INSERT INTO users (firstname, lastname, role, email, password, phoneNumber, status) VALUES
-('Alice', 'Johnson', 'admin', 'alice@example.com', 'hashedpassword1', '1234567890', 'active'),
-('Bob', 'Smith', 'user', 'bob@example.com', 'hashedpassword2', '0987654321', 'active'),
-('Charlie', 'Lee', 'user', 'charlie@example.com', 'hashedpassword3', NULL, 'inactive');
+('Alice', 'Johnson', 'admin', 'alice@example.com', '$2y$10$pO42Zqv7lEQNUbfiq/wOGOGSC69nm2vwfwDiNFQgmz2RLTGUX4dE.', '1234567890', 'active'),
+('Bob', 'Smith', 'user', 'bob@example.com', '$2y$10$pO42Zqv7lEQNUbfiq/wOGOGSC69nm2vwfwDiNFQgmz2RLTGUX4dE.', '0987654321', 'active'),
+('Charlie', 'Lee', 'user', 'charlie@example.com', '$2y$10$pO42Zqv7lEQNUbfiq/wOGOGSC69nm2vwfwDiNFQgmz2RLTGUX4dE.', NULL, 'inactive');
 
 INSERT INTO materials (name, description, price, quantity, seller, status, location, image) VALUES
 ('Recycled Wood Planks', 'Planks from demolished buildings, good condition.', 10.50, 100, 1, 'In Stock', 'Amsterdam', 'images/wood.jpg'),

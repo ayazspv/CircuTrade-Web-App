@@ -2,6 +2,11 @@
 
 namespace Repositories;
 
+require_once __DIR__ . '/Repository.php';
+require_once __DIR__ . '/../Models/User.php';
+require_once __DIR__ . '/../Models/UserRole.php';
+require_once __DIR__ . '/../Models/UserStatus.php';
+
 use Models\User;
 use PDO;
 
@@ -96,26 +101,29 @@ class UserRepository extends Repository
     public function editUser($user)
     {
         try {
-            $stmt = $this->connection->prepare("
-                UPDATE users SET 
-                    firstname = :firstname,
-                    lastname = :lastname,
-                    role = :role,
-                    email = :email,
-                    password = :password,
-                    phoneNumber = :phoneNumber,
-                    status = :status
-                WHERE id = :id
-            ");
+            $fields = [
+                'firstname = :firstname',
+                'lastname = :lastname',
+                'role = :role',
+                'email = :email',
+                'phoneNumber = :phoneNumber',
+                'status = :status'
+            ];
+            if (!empty($user->password)) {
+                $fields[] = 'password = :password';
+            }
+            $sql = "UPDATE users SET " . implode(', ', $fields) . " WHERE id = :id";
+            $stmt = $this->connection->prepare($sql);
             $stmt->bindParam(':id', $user->id);
             $stmt->bindParam(':firstname', $user->firstname);
             $stmt->bindParam(':lastname', $user->lastname);
             $stmt->bindParam(':role', $user->role);
             $stmt->bindParam(':email', $user->email);
-            $stmt->bindParam(':password', $user->password);
             $stmt->bindParam(':phoneNumber', $user->phoneNumber);
             $stmt->bindParam(':status', $user->status);
-
+            if (!empty($user->password)) {
+                $stmt->bindParam(':password', $user->password);
+            }
             return $stmt->execute();
         } catch (\PDOException $e) {
             error_log("Database error in editUser: " . $e->getMessage());
@@ -138,14 +146,8 @@ class UserRepository extends Repository
     public function getAllUsers()
     {
         try {
-            $stmt = $this->connection->query("SELECT * FROM users");
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            $users = [];
-            foreach ($results as $result) {
-                $users[] = $this->mapToUser($result);
-            }
-            return $users;
+            $stmt = $this->connection->query("SELECT * FROM `users`");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             error_log("Database error in getAllUsers: " . $e->getMessage());
             return [];
@@ -167,16 +169,19 @@ class UserRepository extends Repository
 
     private function mapToUser($data)
     {
-        // Map DB row to User model (adjust as needed for your User model)
+        // Convert role and status strings to enums
+        $role = \Models\UserRole::from($data["role"]);
+        $status = \Models\UserStatus::from($data["status"]);
+
         return new User(
             $data["id"],
             $data["firstname"],
             $data["lastname"],
-            $data["role"],
+            $role,
             $data["email"],
             $data["password"],
             $data["phoneNumber"] ?? null,
-            $data["status"]
+            $status
         );
     }
 }

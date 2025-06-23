@@ -1,32 +1,48 @@
 <script setup>
-defineProps(
-  {
-    item: {
-      type: Object,
-      required: true
-    }
+import { useRouter } from 'vue-router'
+
+const props = defineProps({
+  item: {
+    type: Object,
+    required: true
   }
-)
+})
+
+const router = useRouter()
+
+function goToDetail() {
+  router.push(`/materials/${props.item.id}`)
+}
 </script>
 <template>
-    <div class="card h-100 border-0 shadow-sm position-relative overflow-hidden rounded-4 material-card">
-          <div class="ratio ratio-16x9 rounded-top-4 bg-light">
-            <img :src="item.image" :alt="item.title" class="card-img-top object-fit-cover" />
-          </div>
-          <div class="card-body d-flex flex-column p-3">
-            <h5 class="fw-bold mb-1 material-title">{{ item.title }}</h5>
-            <div class="d-flex align-items-center mb-2">
-              <i class="fas fa-map-marker-alt text-primary me-1"></i>
-              <span class="text-muted small">{{ item.city }}</span>
-            </div>
-            <div class="mt-auto d-flex align-items-center justify-content-between">
-              <span class="badge bg-light text-success fs-6 px-3 py-2 price-tag">€{{ item.price }}</span>
-              <button class="btn btn-primary btn-sm rounded-pill px-3 btn-view stretched-link" tabindex="0">
-                View <i class="fas fa-arrow-right ms-1"></i>
-              </button>
-            </div>
-          </div>
-        </div>
+  <div
+    class="card h-100 border-0 shadow-sm position-relative overflow-hidden rounded-4 material-card"
+    tabindex="0"
+    style="cursor:pointer"
+    @click="goToDetail"
+  >
+    <div class="ratio ratio-16x9 rounded-top-4 bg-light">
+      <img :src="item.image" :alt="item.name" class="card-img-top object-fit-cover" />
+    </div>
+    <div class="card-body d-flex flex-column p-3">
+      <h5 class="fw-bold mb-1 material-title">{{ item.name }}</h5>
+      <div class="d-flex align-items-center mb-2">
+        <i class="fas fa-map-marker-alt text-primary me-1"></i>
+        <span class="text-muted small">{{ item.location }}</span>
+      </div>
+      <div class="mt-auto d-flex align-items-center justify-content-between">
+        <span class="badge bg-light text-success fs-6 px-3 py-2 price-tag">€{{ item.price }}</span>
+        <a
+          class="btn btn-primary btn-sm rounded-pill px-3 btn-view"
+          :href="`/materials/${item.id}`"
+          @click.stop
+          tabindex="0"
+        >
+          View <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
