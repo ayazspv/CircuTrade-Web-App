@@ -14,5 +14,8 @@
             "email": "ayazsaadatpour2@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "firebase/php-jwt": "^6.11",
+        "bramus/router": "^1.6"
+    }
 }

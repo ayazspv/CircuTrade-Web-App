@@ -1,47 +1,56 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+
+import AppLayout from './components/Layout/AppLayout.vue'
+import AuthLayout from './components/Layout/AuthLayout.vue'
+import DashboardLayout from './components/Layout/DashboardLayout.vue'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
+
+const route = useRoute()
+
+const isManager = computed(() => {
+  return route.matched.find(r => r.meta.isManager !== undefined)?.meta.isManager ?? false
+})
+
+const ManagerMenu = [
+  { label: 'Overview', to: '/dashboard', icon: 'fas fa-home' },
+  { label: 'Materials', to: '/dashboard/materials', icon: 'fas fa-boxes' },
+  { label: 'Orders', to: '/dashboard/orders', icon: 'fas fa-shopping-cart' },
+  { label: 'Users', to: '/dashboard/users', icon: 'fas fa-users' },
+]
+
+const UserMenu = [
+  { label: 'Overview', to: '/dashboard/userId', icon: 'fas fa-home' },
+]
+
+// Decide which menu to use
+const dashboardMenu = computed(() => (isManager.value ? ManagerMenu : UserMenu))
+
+const layoutComponent = computed(() => {
+  const layout = route.meta.layout
+  switch (layout) {
+    case 'AppLayout':
+      return AppLayout
+    case 'AuthLayout':
+      return AuthLayout
+    case 'DashboardLayout':
+      return DashboardLayout
+    case 'none':
+      return null
+    default:
+      return AppLayout
+  }
+})
+
 </script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <DashboardLayout v-if="layoutComponent === DashboardLayout" :menu="dashboardMenu">
+    <router-view />
+  </DashboardLayout>
+  <component v-else-if="layoutComponent" :is="layoutComponent">
+    <router-view />
+  </component>
+  <router-view v-else />
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+<style scoped></style>
