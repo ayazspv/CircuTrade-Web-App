@@ -19,7 +19,7 @@ export const useUserStore = defineStore('users', () => {
         user.value = {
           id: response.data.id,
           email: response.data.userEmail,
-          type: response.data.userType,
+          role: response.data.userType, // <-- use 'role' instead of 'type'
         };
         localStorage.setItem('token', response.data.token);
         return response.data;

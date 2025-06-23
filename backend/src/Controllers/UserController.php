@@ -83,12 +83,27 @@ class UserController extends BaseController
         }
     }
 
-    public function me($user)
+    public function me()
     {
+        $jwt = $this->getUserFromJwt();
+        $userId = $jwt->data->id ?? null;
+        if (!$userId) {
+            $this->respondWithError(401, "Invalid token");
+            return;
+        }
         try {
-            $userData = $this->userService->me($user->id);
+            $userData = $this->userService->me($userId);
             if ($userData) {
-                $this->respond($userData);
+                // Respond with a clean user object (avoid sending password)
+                $this->respond([
+                    'id' => $userData->getId(),
+                    'firstname' => $userData->getFirstname(),
+                    'lastname' => $userData->getLastname(),
+                    'email' => $userData->getEmail(),
+                    'role' => $userData->getRole()->value,
+                    'phoneNumber' => $userData->getPhoneNumber(),
+                    'status' => $userData->getStatus()->value,
+                ]);
             } else {
                 $this->respondWithError(404, "User not found");
             }
@@ -162,9 +177,8 @@ class UserController extends BaseController
     }
 
 
-    public static function test() {
-        error_log("✅ /api/test route hit");
-    header('Content-Type', 'application/json');
-    echo json_encode(['message' => '✅ It works!']);
+    public function test(...$args)
+    {
+        $this->respond(['message' => '✅ It works!']);
     }
 }

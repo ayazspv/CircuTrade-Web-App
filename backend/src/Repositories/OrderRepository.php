@@ -47,4 +47,15 @@ class OrderRepository extends Repository {
             return null;
         }
     }
+    
+    public function getOrdersByUserId($userId) {
+        try {
+            $stmt = $this->connection->prepare("SELECT * FROM orders WHERE userId = :userId");
+            $stmt->bindParam(':userId', $userId);
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_OBJ);
+        } catch (\PDOException $e) {
+            return [];
+        }
+    }
 }

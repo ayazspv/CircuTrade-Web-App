@@ -71,7 +71,7 @@ const routes = [
                 meta: { layout: 'DashboardLayout', isManager: true, requiresAuth: true },
             },
             {
-                path: 'userId',
+                path: 'user',
                 name: 'UserDashboard',
                 component: UserDashboard,
                 meta: { layout: 'DashboardLayout', isManager: false, requiresAuth: true },
@@ -115,21 +115,31 @@ const router = createRouter({
     routes,
 });
 
-router.beforeEach((to, from, next) => {
-    // Only check routes that require authentication
-    if (to.matched.some(record => record.meta.requiresAuth)) {
-        // Use Pinia store for authentication check
-        const userStore = useUserStore();
-        const isAuthenticated = !!userStore.token; // or your preferred logic
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore();
+  const isAuthenticated = !!userStore.token;
 
-        if (!isAuthenticated) {
-            next({ name: 'Login' });
-        } else {
-            next();
-        }
-    } else {
-        next();
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!isAuthenticated) {
+      return next({ name: 'Login' });
     }
+    if (!userStore.user) {
+      await userStore.fetchMe?.();
+    }
+    const userRole = userStore.user?.role;
+
+    // Only allow admins to access admin dashboard routes
+    if (to.path.startsWith('/dashboard') && !to.path.startsWith('/dashboard/user') && userRole !== 'admin') {
+      return next({ name: 'UserDashboard' });
+    }
+    // Only allow users to access user dashboard
+    if (to.path === '/dashboard/user' && userRole === 'admin') {
+      return next({ name: 'Dashboard' });
+    }
+    return next();
+  } else {
+    return next();
+  }
 });
 
 export default router;
