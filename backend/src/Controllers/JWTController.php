@@ -15,9 +15,9 @@ class JWTController extends BaseController {
             'iat' => $issuedAt,
             'exp' => $expirationTime,
             'data' => [
-                'id' => $user->userID,
-                'email' => $user->userEmail,
-                'name' => $user->userName
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'name' => $user->getFirstname() . ' ' . $user->getLastname()
             ]
         ];
     

@@ -2,8 +2,13 @@
 import { ref, computed, onMounted } from 'vue'
 // import { useStore } from 'vuex' // Uncomment if using Vuex
 import { useRouter } from 'vue-router'
+import { useCartStore } from '@/stores/cartStore'
+import { useUserStore } from '@/stores/userStore'
 // const store = useStore()
 const router = useRouter()
+
+const cartStore = useCartStore()
+const userStore = useUserStore()
 
 const loading = ref(false)
 const itemLoading = ref(false)
@@ -56,8 +61,11 @@ function clearCart() {
 }
 
 function checkout() {
-  // Implement checkout logic
-  router.push('/checkout')
+  if (!userStore.token) {
+    router.push({ name: 'Login', query: { redirect: '/checkout' } })
+  } else {
+    router.push('/checkout')
+  }
 }
 </script>
 

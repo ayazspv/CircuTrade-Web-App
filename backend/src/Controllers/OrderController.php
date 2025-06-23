@@ -8,15 +8,10 @@ use Services\OrderService;
 
 class OrderController extends BaseController {
     private $orderService;
-    private $jwtController;
 
     public function __construct() {
         $this->orderService = new OrderService();
         $this->jwtController = new JWTController();
-    }
-
-    private function getUserFromJwt() {
-        return $this->jwtController->checkForJwt();
     }
 
     public function getAllOrders() {

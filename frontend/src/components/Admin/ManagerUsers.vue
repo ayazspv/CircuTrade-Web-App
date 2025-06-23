@@ -1,16 +1,20 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useUserStore } from '@/stores/userStore'
 import UserForm from './UserForm.vue'
 
-const users = [
-  { name: "Alice", role: "Manager", joined: "2023-11-01" },
-  { name: "Bob", role: "Supplier", joined: "2024-01-15" },
-  { name: "Charlie", role: "Buyer", joined: "2024-03-22" }
-]
-
+const userStore = useUserStore()
 const showForm = ref(false)
 const formMode = ref('add') // 'add' or 'edit'
 const selectedUser = ref(null)
+
+onMounted(async () => {
+  if (!userStore.users.length) {
+    await userStore.fetchAllUsers()
+  }
+})
+
+const users = computed(() => userStore.users)
 
 function openAddForm() {
   formMode.value = 'add'
@@ -18,24 +22,36 @@ function openAddForm() {
   showForm.value = true
 }
 
-function openEditForm(item) {
+function openEditForm(user) {
   formMode.value = 'edit'
-  selectedUser.value = { ...item }
+  selectedUser.value = { ...user }
   showForm.value = true
 }
 
-function handleFormSubmit(user) {
+async function handleFormSubmit(user) {
   if (formMode.value === 'add') {
-    items.value.push(user)
+    await userStore.addUser(user)
   } else if (formMode.value === 'edit') {
-    const idx = items.value.findIndex(i => i.name === selecteduser.value.name)
-    if (idx !== -1) items.value[idx] = user
+    const userData = {
+      firstname: user.firstName,
+      lastname: user.lastName,
+      email: user.email,
+      role: user.role,
+      phoneNumber: user.phoneNumber,
+      status: user.status
+    }
+    if (user.password) {
+      userData.password = user.password
+    }
+    await userStore.editUser(selectedUser.value.id, userData)
   }
+  await userStore.fetchAllUsers()
   showForm.value = false
 }
 
-function handleDelete(item) {
-  items.value = items.value.filter(i => i.name !== item.name)
+async function handleDelete(user) {
+  await userStore.deleteUser(user.id)
+  await userStore.fetchAllUsers()
 }
 </script>
 
@@ -56,24 +72,40 @@ function handleDelete(item) {
         <table class="table table-hover align-middle mb-0">
           <thead class="table-light">
             <tr>
+              <th>User ID</th>
               <th>Name</th>
+              <th>Email</th>
+              <th>Active</th>
+              <th>Phone</th>
               <th>Role</th>
-              <th>Joined</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="user in users" :key="user.name">
-              <td class="fw-semibold">{{ user.name }}</td>
+            <tr v-for="user in users" :key="user.id">
+              <td>{{ user.id }}</td>
+              <td class="fw-semibold">{{ user.name || (user.firstname + ' ' + user.lastname) }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span
+                  :class="{
+                    'badge bg-success': user.status === 'active',
+                    'badge bg-secondary': user.status === 'inactive',
+                    'badge bg-warning': user.status === 'pending'
+                  }"
+                >
+                  {{ user.status ? user.status.charAt(0).toUpperCase() + user.status.slice(1) : 'Unknown' }}
+                </span>
+              </td>
+              <td>{{ user.phone || user.phoneNumber }}</td>
               <td>
                 <span class="badge bg-gradient-secondary px-3 py-2">{{ user.role }}</span>
               </td>
-              <td>{{ user.joined }}</td>
               <td>
-                <button class="btn btn-sm btn-outline-secondary me-2" @click="openEditForm(item)">
+                <button class="btn btn-sm btn-outline-secondary me-2" @click="openEditForm(user)">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" @click="handleDelete(item)">
+                <button class="btn btn-sm btn-outline-danger" @click="handleDelete(user)">
                   <i class="fas fa-trash"></i>
                 </button>
               </td>
@@ -82,10 +114,15 @@ function handleDelete(item) {
         </table>
       </div>
     </div>
-    <!-- Material Form Modal -->
+    <!-- User Form Modal -->
     <div v-if="showForm" class="modal-backdrop">
       <div class="modal-content container w-50">
-        <UserForm :mode="formMode" :user="selectedUser" @submit="handleFormSubmit" @cancel="showForm = false" />
+        <UserForm
+          :mode="formMode"
+          :user="selectedUser"
+          @saved="handleFormSubmit"
+          @cancel="showForm = false"
+        />
       </div>
     </div>
   </section>

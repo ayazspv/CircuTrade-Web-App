@@ -14,6 +14,9 @@ import Cart from  '@/components/Cart/Cart.vue';
 import Checkout from '@/components/Cart/Checkout.vue';
 import OrderSuccess from '@/components/Cart/OrderSuccess.vue';
 
+// Import your Pinia store
+import { useUserStore } from '@/stores/userStore';
+
 const routes = [
     {
         path: '/',
@@ -41,57 +44,51 @@ const routes = [
     },
     {
         path: '/dashboard',
-        meta: { layout: 'DashboardLayout' },
+        meta: { layout: 'DashboardLayout', requiresAuth: true },
         children: [
             {
                 path: '',
                 name: 'Dashboard',
                 component: ManagerDashboard,
-                meta: { layout: 'DashboardLayout', isManager: true },
+                meta: { layout: 'DashboardLayout', isManager: true, requiresAuth: true },
             },
             {
                 path: 'materials',
                 name: 'DashboardMaterials',
                 component: ManagerMaterials,
-                meta: { layout: 'DashboardLayout', isManager: true },
+                meta: { layout: 'DashboardLayout', isManager: true, requiresAuth: true },
             },
             {
                 path: 'orders',
                 name: 'DashboardOrders',
                 component: ManagerOrders,
-                meta: { layout: 'DashboardLayout', isManager: true },
+                meta: { layout: 'DashboardLayout', isManager: true, requiresAuth: true },
             },
             {
                 path: 'users',
                 name: 'DashboardUsers',
                 component: ManagerUsers,
-                meta: { layout: 'DashboardLayout', isManager: true },
+                meta: { layout: 'DashboardLayout', isManager: true, requiresAuth: true },
             },
             {
                 path: 'userId',
                 name: 'UserDashboard',
                 component: UserDashboard,
-                meta: { layout: 'DashboardLayout', isManager: false },
+                meta: { layout: 'DashboardLayout', isManager: false, requiresAuth: true },
             },
         ]
     },
     {
         path: '/materials',
-        meta: { layout: 'AppLayout' },
-        children: [
-            {
-                path: '',
-                name: 'Materials',
-                component: Materials,
-                meta: { layout: 'AppLayout' }
-            },
-            {
-                path: 'item',
-                name: 'MaterialDetail',
-                component: MaterialDetail,
-                meta: { layout: 'AppLayout' }
-            }
-        ]
+        name: 'Materials',
+        component: Materials,
+        meta: { layout: 'AppLayout' }
+    },
+    {
+        path: '/materials/:id',
+        name: 'MaterialDetail',
+        component: MaterialDetail,
+        meta: { layout: 'AppLayout' }
     },
     {
         path: '/cart',
@@ -111,9 +108,7 @@ const routes = [
         component: OrderSuccess,
         meta: { layout: 'none' }
     },
-
 ]
-
 
 const router = createRouter({
     history: createWebHistory(),
@@ -121,19 +116,19 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    // Check if the route requires authentication
+    // Only check routes that require authentication
     if (to.matched.some(record => record.meta.requiresAuth)) {
-        // Here you would typically check if the user is authenticated
-        const isAuthenticated = false; // Replace with actual authentication check
+        // Use Pinia store for authentication check
+        const userStore = useUserStore();
+        const isAuthenticated = !!userStore.token; // or your preferred logic
 
         if (!isAuthenticated) {
-            // Redirect to login page or show an error
-            next({ name: 'Login' }); // Assuming you have a Login route defined
+            next({ name: 'Login' });
         } else {
-            next(); // Proceed to the route
+            next();
         }
     } else {
-        next(); // Proceed to the route
+        next();
     }
 });
 

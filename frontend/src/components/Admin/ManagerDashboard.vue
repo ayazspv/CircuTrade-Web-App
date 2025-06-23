@@ -1,46 +1,63 @@
 <script setup>
-const items = [
-    { name: "Steel Beams", quantity: 40, status: "Active" },
-    { name: "Wood Panels", quantity: 22, status: "Active" },
-    { name: "Copper Wires", quantity: 66, status: "Inactive" }
-]
-const orders = [
-    { id: 101, item: "Steel Beams", user: "Alice", date: "2024-06-01", status: "Completed" },
-    { id: 102, item: "Wood Panels", user: "Bob", date: "2024-06-10", status: "Pending" },
-    { id: 103, item: "Copper Wires", user: "Charlie", date: "2024-06-15", status: "Completed" }
-]
-const users = [
-  { name: "Alice", role: "Manager", joined: "2023-11-01" },
-  { name: "Bob", role: "Supplier", joined: "2024-01-15" },
-  { name: "Charlie", role: "Buyer", joined: "2024-03-22" }
-]
-// Overview stats
-const stats = [
+import { ref, computed, onMounted } from 'vue'
+import { useMaterialStore } from '@/stores/materialStore'
+import { useOrderStore } from '@/stores/orderStore'
+import { useUserStore } from '@/stores/userStore'
+
+const materialStore = useMaterialStore()
+const orderStore = useOrderStore()
+const userStore = useUserStore()
+
+onMounted(async () => {
+  if (!materialStore.materials.length) await materialStore.fetchMaterials()
+  if (!orderStore.orders.length) await orderStore.fetchOrders()
+  if (!userStore.users.length) await userStore.fetchAllUsers()
+})
+
+const items = computed(() => materialStore.materials || [])
+const orders = computed(() => orderStore.orders || [])
+const users = computed(() => userStore.users || [])
+
+const stats = computed(() => [
   {
     title: "Items & Materials",
     icon: "fas fa-boxes",
-    value: items.length,
+    value: items.value.length,
     desc: "Tracked types"
   },
   {
     title: "Total Quantity",
     icon: "fas fa-cubes",
-    value: items.reduce((sum, i) => sum + i.quantity, 0),
+    value: items.value.reduce((sum, i) => sum + (i.quantity || 0), 0),
     desc: "All items in stock"
   },
   {
     title: "Orders",
     icon: "fas fa-shopping-cart",
-    value: orders.length,
+    value: orders.value.length,
     desc: "Orders placed"
   },
   {
     title: "Users",
     icon: "fas fa-users",
-    value: users.length,
+    value: users.value.length,
     desc: "Registered users"
   }
-]
+])
+
+const mostStockedItem = computed(() =>
+  items.value.length
+    ? items.value.reduce((max, i) => (i.quantity > max.quantity ? i : max), items.value[0]).name
+    : 'N/A'
+)
+
+const latestOrder = computed(() =>
+  orders.value.length ? orders.value[orders.value.length - 1] : null
+)
+
+const newestUser = computed(() =>
+  users.value.length ? users.value[users.value.length - 1] : null
+)
 </script>
 
 <template>
@@ -64,9 +81,7 @@ const stats = [
           <i class="fas fa-boxes fa-lg text-primary mb-2"></i>
           <div class="fw-semibold mb-1">Most Stocked Item</div>
           <div class="fs-5">
-            {{
-              items.reduce((max, i) => i.quantity > max.quantity ? i : max, items[0]).name
-            }}
+            {{ mostStockedItem }}
           </div>
         </div>
       </div>
@@ -74,24 +89,29 @@ const stats = [
         <div class="card shadow border-0 rounded-4 h-100 p-4 d-flex flex-column align-items-center justify-content-center">
           <i class="fas fa-shopping-cart fa-lg text-primary mb-2"></i>
           <div class="fw-semibold mb-1">Latest Order</div>
-          <div class="fs-6 text-muted mb-1">
-            #{{ orders[orders.length-1].id }} &mdash; {{ orders[orders.length-1].item }}
+          <div class="fs-6 text-muted mb-1" v-if="latestOrder">
+            #{{ latestOrder.id }} &mdash; {{ latestOrder.item || latestOrder.materialName || 'N/A' }}
           </div>
-          <div class="small text-secondary">
-            by {{ orders[orders.length-1].user }} on {{ orders[orders.length-1].date }}
+          <div class="small text-secondary" v-if="latestOrder">
+            by {{ latestOrder.user || latestOrder.userName || latestOrder.userId || 'N/A' }} on {{ latestOrder.date || latestOrder.created_at || 'N/A' }}
           </div>
+          <div v-else class="text-muted">No orders yet</div>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="card shadow border-0 rounded-4 h-100 p-4 d-flex flex-column align-items-center justify-content-center">
           <i class="fas fa-user-plus fa-lg text-primary mb-2"></i>
           <div class="fw-semibold mb-1">Newest User</div>
-          <div class="fs-5">{{ users[users.length-1].name }}</div>
-          <div class="small text-secondary">{{ users[users.length-1].role }}</div>
+          <div class="fs-5">
+            {{ newestUser ? (newestUser.name || (newestUser.firstname + ' ' + newestUser.lastname)) : 'N/A' }}
+          </div>
+          <div class="small text-secondary">
+            {{ newestUser ? (newestUser.role || 'N/A') : '' }}
+          </div>
         </div>
       </div>
     </div>
-    </div>
+  </div>
 </template>
 
 <style scoped>

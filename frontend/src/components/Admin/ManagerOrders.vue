@@ -1,19 +1,23 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useOrderStore } from '@/stores/orderStore'
 import OrderDetails from './OrderDetails.vue'
 
-const orders = [
-    { id: 101, item: "Steel Beams", user: "Alice", date: "2024-06-01", status: "Completed" },
-    { id: 102, item: "Wood Panels", user: "Bob", date: "2024-06-10", status: "Pending" },
-    { id: 103, item: "Copper Wires", user: "Charlie", date: "2024-06-15", status: "Completed" }
-]
-
+const orderStore = useOrderStore()
 const showDetails = ref(false)
 const selectedOrder = ref(null)
 
+onMounted(async () => {
+  if (!orderStore.orders.length) {
+    await orderStore.fetchOrders()
+  }
+})
+
+const orders = computed(() => orderStore.orders)
+
 function openOrderDetails(order) {
-    selectedOrder.value = order
-    showDetails.value = true
+  selectedOrder.value = order
+  showDetails.value = true
 }
 </script>
 
@@ -29,8 +33,7 @@ function openOrderDetails(order) {
                     <thead class="table-light">
                         <tr>
                             <th>Order ID</th>
-                            <th>Item</th>
-                            <th>User</th>
+                            <th>User ID</th>
                             <th>Date</th>
                             <th>Status</th>
                         </tr>
@@ -39,12 +42,11 @@ function openOrderDetails(order) {
                         <tr v-for="order in orders" :key="order.id" @click="openOrderDetails(order)"
                             style="cursor:pointer;">
                             <td class="fw-semibold">#{{ order.id }}</td>
-                            <td>{{ order.item }}</td>
-                            <td>{{ order.user }}</td>
-                            <td>{{ order.date }}</td>
+                            <td>{{ order.userId }}</td>
+                            <td>{{ order.created_at }}</td>
                             <td>
                                 <span
-                                    :class="order.status === 'Completed' ? 'badge bg-success-soft text-success' : 'badge bg-warning-soft text-warning'">
+                                    :class="order.status === 'completed' ? 'badge bg-success-soft text-success' : 'badge bg-warning-soft text-warning'">
                                     {{ order.status }}
                                 </span>
                             </td>

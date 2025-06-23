@@ -1,10 +1,26 @@
 <?php
-
 $allowedOrigins = [
     'http://localhost:5173'
 ];
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+} else {
+    header("Access-Control-Allow-Origin: http://localhost:5173");
+}
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Credentials: true");
 
+// Handle preflight OPTIONS request globally
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
