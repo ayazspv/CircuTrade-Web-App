@@ -45,7 +45,7 @@ function onSearch(e) {
         </div>
         <div class="hero-content bg-white bg-opacity-90 rounded-4 shadow-lg mx-auto p-4 p-md-5">
             <div class="mb-4">
-                <img src="#" alt="CircuTrade Logo" class="brand-logo mb-3" />
+                <!-- <img src="#" alt="CircuTrade Logo" class="brand-logo mb-3" /> -->
                 <h1 class="hero-title fw-bold display-4">
                     <span class="first-half">Circu</span><span class="second-half">Trade</span>
                 </h1>
@@ -54,7 +54,7 @@ function onSearch(e) {
                     <span class="second-half">Infinite Possibilities</span>
                 </p>
             </div>
-            <form
+            <!-- <form
                 class="hero-search-form d-flex flex-column flex-md-row align-items-stretch justify-content-center gap-2 gap-md-3 mb-4"
                 @submit="onSearch">
                 <input v-model="search" class="form-control form-control-lg shadow-sm" type="search"
@@ -69,7 +69,7 @@ function onSearch(e) {
                 <button class="btn btn-primary btn-lg px-4 fw-bold shadow" type="submit">
                     <i class="fas fa-search me-2"></i>Search
                 </button>
-            </form>
+            </form> -->
             <div class="d-flex flex-wrap justify-content-center gap-3">
                 <router-link to="/register" class="btn btn-success btn-lg rounded-pill px-4 shadow-sm">Create Free
                     Account</router-link>

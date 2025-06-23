@@ -30,12 +30,20 @@ class UserService
 
     public function addUser($user)
     {
+        // Hash password if not already hashed
+        if (!empty($user->password) && strlen($user->password) < 60) {
+            $user->password = password_hash($user->password, PASSWORD_DEFAULT);
+        }
         return $this->userRepository->addUser($user);
     }
 
-    public function editUser($user)
+    public function editUser($id, $userData)
     {
-        return $this->userRepository->editUser($user);
+        // Convert stdClass to array if necessary
+        if (is_object($userData)) {
+            $userData = (array)$userData;
+        }
+        return $this->userRepository->editUser($id, $userData);
     }
 
     public function deleteUser($userId)

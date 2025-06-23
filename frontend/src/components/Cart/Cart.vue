@@ -1,63 +1,57 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-// import { useStore } from 'vuex' // Uncomment if using Vuex
 import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cartStore'
 import { useUserStore } from '@/stores/userStore'
-// const store = useStore()
-const router = useRouter()
 
+const router = useRouter()
 const cartStore = useCartStore()
 const userStore = useUserStore()
 
-const loading = ref(false)
 const itemLoading = ref(false)
 const error = ref(null)
 
-// Example cart items (replace with your store or API)
-const items = ref([
-  {
-    id: '1',
-    product: {
-      name: 'Steel Beams',
-      price: 30,
-      image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80'
-    },
-    quantity: 2
-  },
-  {
-    id: '2',
-    product: {
-      name: 'Wood Panels',
-      price: 15,
-      image: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80'
-    },
-    quantity: 1
+// --- Add this function to reload from sessionStorage ---
+function reloadCartFromStorage() {
+  const stored = sessionStorage.getItem('cartItems')
+  if (stored) {
+    try {
+      cartStore.items.value = JSON.parse(stored)
+    } catch (e) {
+      cartStore.items.value = []
+    }
   }
-])
+}
 
-const shipping = ref(0)
+onMounted(() => {
+  reloadCartFromStorage()
+})
+// -------------------------------------------------------
+
+const items = computed(() => (cartStore.items.value || []).filter(item => item.product))
+
+const shipping = computed(() => (subtotal.value >= 50 ? 0 : 4.99))
 const subtotal = computed(() =>
-  items.value.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
+  items.value.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0)
 )
 const total = computed(() => subtotal.value + shipping.value)
 
 function formatPrice(price) {
-  return price.toFixed(2)
+  return Number(price).toFixed(2)
 }
 
-function updateQuantity(id, newQty) {
-  if (newQty < 1) return
-  const item = items.value.find(i => i.id === id)
-  if (item) item.quantity = newQty
+function updateQuantity(id, quantity) {
+  if (quantity > 0) {
+    cartStore.updateQuantity(id, quantity)
+  }
 }
 
 function removeFromCart(id) {
-  items.value = items.value.filter(i => i.id !== id)
+  cartStore.removeFromCart(id)
 }
 
 function clearCart() {
-  items.value = []
+  cartStore.clearCart()
 }
 
 function checkout() {
@@ -99,7 +93,11 @@ function checkout() {
           </div>
           <div class="card-body p-0">
             <div class="list-group list-group-flush">
-              <div v-for="item in items" :key="item.id" class="list-group-item py-4 px-3">
+              <div
+                v-for="item in items"
+                :key="item.id"
+                class="list-group-item py-4 px-3"
+              >
                 <div class="row align-items-center">
                   <div class="col-md-2 col-4">
                     <img :src="item.product.image" :alt="item.product.name"
@@ -113,18 +111,18 @@ function checkout() {
                   </div>
                   <div class="col-md-3 col-6 mt-3 mt-md-0">
                     <div class="input-group input-group-sm">
-                      <button @click="updateQuantity(item.id, item.quantity - 1)"
+                      <!-- <button @click="updateQuantity(item.id, item.quantity - 1)"
                         class="btn btn-outline-secondary"
                         :disabled="item.quantity <= 1 || itemLoading">
                         <i class="fas fa-minus"></i>
-                      </button>
+                      </button> -->
                       <input type="number" v-model.number="item.quantity"
                         @change="updateQuantity(item.id, item.quantity)"
                         class="form-control text-center" min="1">
-                      <button @click="updateQuantity(item.id, item.quantity + 1)"
+                      <!-- <button @click="updateQuantity(item.id, item.quantity + 1)"
                         class="btn btn-outline-secondary" :disabled="itemLoading">
                         <i class="fas fa-plus"></i>
-                      </button>
+                      </button> -->
                     </div>
                   </div>
                   <div class="col-md-2 col-6 mt-3 mt-md-0 text-end">
@@ -177,6 +175,7 @@ function checkout() {
         </div>
       </div>
     </div>
+    <!-- <pre>{{ items }}</pre> -->
   </div>
 </template>
 

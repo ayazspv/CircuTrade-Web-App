@@ -54,9 +54,9 @@ CREATE TABLE orderitems (
 );
 
 INSERT INTO users (firstname, lastname, role, email, password, phoneNumber, status) VALUES
-('Alice', 'Johnson', 'admin', 'alice@example.com', '$2y$10$pO42Zqv7lEQNUbfiq/wOGOGSC69nm2vwfwDiNFQgmz2RLTGUX4dE.', '1234567890', 'active'),
-('Bob', 'Smith', 'user', 'bob@example.com', '$2y$10$pO42Zqv7lEQNUbfiq/wOGOGSC69nm2vwfwDiNFQgmz2RLTGUX4dE.', '0987654321', 'active'),
-('Charlie', 'Lee', 'user', 'charlie@example.com', '$2y$10$pO42Zqv7lEQNUbfiq/wOGOGSC69nm2vwfwDiNFQgmz2RLTGUX4dE.', NULL, 'inactive');
+('Alice', 'Johnson', 'admin', 'alice@example.com', '$2y$10$eEi7JRvX.pqvomOAQ6V.weIUzW4ZHdG.6UKyErhuHp0./fnVcqmnS', '1234567890', 'active'),
+('Bob', 'Smith', 'user', 'bob@example.com', '$2y$10$eEi7JRvX.pqvomOAQ6V.weIUzW4ZHdG.6UKyErhuHp0./fnVcqmnS', '0987654321', 'active'),
+('Charlie', 'Lee', 'user', 'charlie@example.com', '$2y$10$eEi7JRvX.pqvomOAQ6V.weIUzW4ZHdG.6UKyErhuHp0./fnVcqmnS', NULL, 'inactive');
 
 INSERT INTO materials (name, description, price, quantity, seller, status, location, image) VALUES
 ('Recycled Wood Planks', 'Planks from demolished buildings, good condition.', 10.50, 100, 1, 'In Stock', 'Amsterdam', 'images/wood.jpg'),

@@ -97,56 +97,59 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-// import { useStore } from 'vuex' // Uncomment if using Vuex
+import { useCartStore } from '@/stores/cartStore'
+import { useUserStore } from '@/stores/userStore'
+import { useOrderStore } from '@/stores/orderStore'
 
-// const store = useStore()
 const router = useRouter()
-
-// Example cart items (replace with your store or API)
-const cartItems = ref([
-  {
-    id: '1',
-    product: {
-      name: 'Steel Beams',
-      price: 30,
-      image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80'
-    },
-    quantity: 2
-  },
-  {
-    id: '2',
-    product: {
-      name: 'Wood Panels',
-      price: 15,
-      image: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80'
-    },
-    quantity: 1
-  }
-])
+const cartStore = useCartStore()
+const userStore = useUserStore()
+const orderStore = useOrderStore()
 
 const loading = ref(false)
 const error = ref(null)
 
+const cartItems = computed(() => (cartStore.items.value || []).filter(item => item.product))
 const subtotal = computed(() =>
-  cartItems.value.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
+  cartItems.value.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0)
 )
 const shipping = computed(() => (subtotal.value >= 50 ? 0 : 4.99))
 const total = computed(() => subtotal.value + shipping.value)
 
 function formatPrice(price) {
-  return price.toFixed(2)
+  return Number(price).toFixed(2)
 }
 
 async function placeOrder() {
+  loading.value = true
+  error.value = null
   try {
-    loading.value = true
-    error.value = null
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1200))
-    // On success, redirect to a success page
+    if (!userStore.user || !userStore.user.id) {
+      router.push({ name: 'Login', query: { redirect: '/checkout' } })
+      loading.value = false
+      return
+    }
+    console.log('Placing order with:', {
+      userId: userStore.user.id,
+      cartItems: cartItems.value,
+      total: total.value
+    })
+    const orderId = await orderStore.placeOrder({
+      userId: userStore.user.id,
+      cartItems: cartItems.value,
+      total: total.value
+    })
+    console.log('Order placed successfully, orderId:', orderId)
+    cartStore.clearCart()
     router.push('/order-success')
   } catch (err) {
-    error.value = 'An error occurred while processing your order.'
+    console.error('Order placement failed:', err)
+    if (err.response) {
+      console.error('API response error:', err.response.data)
+      error.value = `Failed to place order: ${err.response.data.message || err.response.statusText}`
+    } else {
+      error.value = err.message || 'Failed to place order. Please try again.'
+    }
   } finally {
     loading.value = false
   }

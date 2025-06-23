@@ -85,6 +85,28 @@ export const useOrderStore = defineStore('orders', () => {
     }
   };
 
+  const placeOrder = async ({ userId, cartItems, total }) => {
+    // 1. Create the order
+    const orderRes = await $axios.post('/orders/add', {
+      userId,
+      total_amount: total,
+      status: 'pending',
+    });
+    const orderId = orderRes.data.order.id;
+
+    // 2. Create order items
+    for (const item of cartItems) {
+      await $axios.post('/orderitems/add', {
+        orderId,
+        materialId: item.product.id,
+        quantity: item.quantity,
+        price: item.product.price,
+      });
+    }
+
+    return orderId;
+  };
+
   return {
     orders,
     latestOrder,
@@ -97,5 +119,6 @@ export const useOrderStore = defineStore('orders', () => {
     fetchOrderItemsByOrderId,
     addOrderItem,
     fetchOrdersByUserId,
+    placeOrder,
   };
 });
