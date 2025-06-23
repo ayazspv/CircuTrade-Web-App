@@ -171,7 +171,7 @@ class UserController extends BaseController
 
     public function getAllUsers()
     {
-        $user = $this->getUserFromJwt();
+        // $user = $this->getUserFromJwt();
         $users = $this->userService->getAllUsers();
         $this->respond($users);
     }

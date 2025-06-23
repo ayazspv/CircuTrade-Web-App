@@ -10,6 +10,7 @@
 - Dashboard with statistics (items, orders, users)
 - Responsive design with Vue 3 and Pinia state management
 - Error and loading state handling
+- Ordering materials and checking its status
 
 ### Backend
 - RESTful API built with PHP
@@ -22,11 +23,11 @@
 
 ## User Credentials (for testing)
 
-| Name    | Email               | Password         | Role   |
-|---------|---------------------|------------------|--------|
-| Alice   | alice@example.com   | SecretPassword   | admin  |
-| Bob     | bob@example.com     | SecretPassword   | user   |
-| Charlie | charlie@example.com | SecretPassword   | user   |
+| Name    | Email               | Password    | Role   |
+|---------|---------------------|-------------|--------|
+| Alice   | alice@example.com   | secret123   | admin  |
+| Bob     | bob@example.com     | secret123   | user   |
+| Charlie | charlie@example.com | secret123   | user   |
 
 > **Note:** If you register a new user via the frontend, use the same email and password for login.
 
@@ -41,22 +42,23 @@
 
 ## Getting Started
 
-### Running the Backend
+### Running the application
 
-To start the backend API, use Docker Compose:
+To start the whole application you can use docker:
 
 ```sh
 docker-compose up --build
 ```
 
-### Running the Frontend
+### In case of docker error
 
-To run the frontend development server:
+incase of docker error with running the frontend and the backend, you can run the backend and frontend separatly. for frotend use the command below:
 
 ```sh
 npm install
 npm run dev
 ```
+Also to be able to access the api's you should change the axios.js file, and in the url, put http://localhost at the beginning of it
 
 ### Building the Frontend for Production
 
@@ -68,8 +70,6 @@ npm run build
 
 ## Known Issues
 
-- There are issues with Axios and fetching the correct data from the backend API.
-- Routing between the frontend and backend is not working as expected; some API calls may not return data or may fail due to misconfiguration.
 - Ensure that the backend is running and accessible at the correct base URL (`http://localhost/api/`).
 - Double-check CORS and Docker/Nginx configuration if you encounter connection problems.
 

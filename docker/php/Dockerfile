@@ -22,11 +22,14 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 # Set working directory
 WORKDIR /var/www/backend
 
-# Copy backend files
-COPY ./backend /var/www/backend
+# Copy composer files first and install dependencies
+COPY ./backend/composer.json ./backend/composer.lock* ./
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Install PHP and Node dependencies
-RUN composer install || true
+# Copy the rest of the backend files
+COPY ./backend ./
+
+# Install Node dependencies if package.json exists
 RUN [ -f package.json ] && npm install || true
 
 # Expose PHP built-in server port
