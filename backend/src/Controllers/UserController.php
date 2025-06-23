@@ -114,8 +114,19 @@ class UserController extends BaseController
 
     public function addUser()
     {
+        $user = $this->getUserFromJwt();
         try {
             $data = $this->getRequestData();
+
+            // Validate required fields
+            $required = ['firstname', 'lastname', 'role', 'email', 'password', 'phoneNumber', 'status'];
+            foreach ($required as $field) {
+                if (empty($data->$field)) {
+                    $this->respondWithError(400, "Missing field: $field");
+                    return;
+                }
+            }
+
             $result = $this->userService->addUser($data);
             if ($result) {
                 $this->respond(['success' => true, 'user' => $result]);
@@ -127,10 +138,12 @@ class UserController extends BaseController
         }
     }
 
-    public function editUser($user)
+    public function editUser($id)
     {
+        $user = $this->getUserFromJwt();
         try {
-            $result = $this->userService->editUser($user);
+            $data = $this->getRequestData();
+            $result = $this->userService->editUser($id, $data);
             if ($result) {
                 $this->respond(['success' => true]);
             } else {
@@ -141,10 +154,11 @@ class UserController extends BaseController
         }
     }
 
-    public function deleteUser($user)
+    public function deleteUser($id)
     {
+        $user = $this->getUserFromJwt();
         try {
-            $result = $this->userService->deleteUser($user->id);
+            $result = $this->userService->deleteUser($id);
             if ($result) {
                 $this->respond(['success' => true]);
             } else {
@@ -164,6 +178,7 @@ class UserController extends BaseController
 
     public function getLatestUser()
     {
+        $user = $this->getUserFromJwt();
         try {
             $user = $this->userService->getLatestUser();
             if ($user) {

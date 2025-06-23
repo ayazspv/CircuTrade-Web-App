@@ -60,7 +60,7 @@ class MaterialController extends BaseController {
     }
 
     public function getMaterialByCity($city) {
-        $user = $this->getUserFromJwt();
+        // $user = $this->getUserFromJwt();
         $materials = $this->materialService->getMaterialByCity($city);
         $this->respond($materials);
     }
@@ -71,13 +71,13 @@ class MaterialController extends BaseController {
     }
 
     public function getHighestStockMaterial() {
-        $user = $this->getUserFromJwt();
+        // $user = $this->getUserFromJwt();
         $material = $this->materialService->getHighestStockMaterial();
         $this->respond($material);
     }
 
     public function getAllQuantities() {
-        $user = $this->getUserFromJwt();
+        // $user = $this->getUserFromJwt();
         $quantities = $this->materialService->getAllQuantities();
         $this->respond($quantities);
     }

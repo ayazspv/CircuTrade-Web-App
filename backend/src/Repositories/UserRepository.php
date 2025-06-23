@@ -98,7 +98,7 @@ class UserRepository extends Repository
         }
     }
 
-    public function editUser($user)
+    public function editUser($id, $userData)
     {
         try {
             $fields = [
@@ -109,20 +109,20 @@ class UserRepository extends Repository
                 'phoneNumber = :phoneNumber',
                 'status = :status'
             ];
-            if (!empty($user->password)) {
+            if (!empty($userData['password'])) {
                 $fields[] = 'password = :password';
             }
             $sql = "UPDATE users SET " . implode(', ', $fields) . " WHERE id = :id";
             $stmt = $this->connection->prepare($sql);
-            $stmt->bindParam(':id', $user->id);
-            $stmt->bindParam(':firstname', $user->firstname);
-            $stmt->bindParam(':lastname', $user->lastname);
-            $stmt->bindParam(':role', $user->role);
-            $stmt->bindParam(':email', $user->email);
-            $stmt->bindParam(':phoneNumber', $user->phoneNumber);
-            $stmt->bindParam(':status', $user->status);
-            if (!empty($user->password)) {
-                $stmt->bindParam(':password', $user->password);
+            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':firstname', $userData['firstname']);
+            $stmt->bindParam(':lastname', $userData['lastname']);
+            $stmt->bindParam(':role', $userData['role']);
+            $stmt->bindParam(':email', $userData['email']);
+            $stmt->bindParam(':phoneNumber', $userData['phoneNumber']);
+            $stmt->bindParam(':status', $userData['status']);
+            if (!empty($userData['password'])) {
+                $stmt->bindParam(':password', $userData['password']);
             }
             return $stmt->execute();
         } catch (\PDOException $e) {

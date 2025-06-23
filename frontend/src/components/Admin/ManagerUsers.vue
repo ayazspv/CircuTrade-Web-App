@@ -11,6 +11,7 @@ const selectedUser = ref(null)
 onMounted(async () => {
   if (!userStore.users.length) {
     await userStore.fetchAllUsers()
+    console.log('Fetched users:', userStore.users)
   }
 })
 
@@ -23,6 +24,7 @@ function openAddForm() {
 }
 
 function openEditForm(user) {
+  console.log('Edit user:', user)
   formMode.value = 'edit'
   selectedUser.value = { ...user }
   showForm.value = true
@@ -30,11 +32,11 @@ function openEditForm(user) {
 
 async function handleFormSubmit(user) {
   if (formMode.value === 'add') {
-    await userStore.addUser(user)
+    await userStore.addUser({ ...user })
   } else if (formMode.value === 'edit') {
     const userData = {
-      firstname: user.firstName,
-      lastname: user.lastName,
+      firstname: user.firstname,
+      lastname: user.lastname,
       email: user.email,
       role: user.role,
       phoneNumber: user.phoneNumber,
@@ -51,7 +53,7 @@ async function handleFormSubmit(user) {
 
 async function handleDelete(user) {
   await userStore.deleteUser(user.id)
-  await userStore.fetchAllUsers()
+  showForm.value = false
 }
 </script>
 
@@ -83,7 +85,10 @@ async function handleDelete(user) {
           </thead>
           <tbody>
             <tr v-for="user in users" :key="user.id">
-              <td>{{ user.id }}</td>
+              <td>
+                {{ user.id }}
+                <span style="display:none">{{ console.log('Table user:', user) }}</span>
+              </td>
               <td class="fw-semibold">{{ user.name || (user.firstname + ' ' + user.lastname) }}</td>
               <td>{{ user.email }}</td>
               <td>

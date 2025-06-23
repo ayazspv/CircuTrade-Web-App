@@ -2,11 +2,11 @@
   <form @submit.prevent="onSubmit">
     <div class="mb-3">
       <label class="form-label">First Name</label>
-      <input v-model="localUser.firstName" type="text" class="form-control" required placeholder="Enter user's first name" />
+      <input v-model="localUser.firstname" type="text" class="form-control" required placeholder="Enter user's first name" />
     </div>
     <div class="mb-3">
       <label class="form-label">Last Name</label>
-      <input v-model="localUser.lastName" type="text" class="form-control" required placeholder="Enter user's last name" />
+      <input v-model="localUser.lastname" type="text" class="form-control" required placeholder="Enter user's last name" />
     </div>
     <div class="mb-3">
       <label class="form-label">Email</label>
@@ -59,8 +59,8 @@ const emit = defineEmits(['saved', 'cancel'])
 const userStore = useUserStore()
 
 const localUser = ref({
-  firstName: '',
-  lastName: '',
+  firstname: '',
+  lastname: '',
   role: 'user',
   email: '',
   password: '',
@@ -68,15 +68,24 @@ const localUser = ref({
   status: 'active',
 })
 
+// Only initialize when the form is opened or user changes (not on every prop update)
 watch(
   () => props.user,
-  (newVal) => {
-    if (newVal) {
-      localUser.value = { ...localUser.value, ...newVal }
-    } else {
+  (newVal, oldVal) => {
+    if (props.mode === 'edit' && newVal && newVal !== oldVal) {
       localUser.value = {
-        firstName: '',
-        lastName: '',
+        firstname: newVal.firstname ?? newVal.firstName ?? '',
+        lastname: newVal.lastname ?? newVal.lastName ?? '',
+        email: newVal.email ?? '',
+        role: newVal.role ?? 'user',
+        password: '',
+        phoneNumber: newVal.phoneNumber ?? newVal.phone ?? '',
+        status: newVal.status ?? 'active'
+      }
+    } else if (props.mode === 'add') {
+      localUser.value = {
+        firstname: '',
+        lastname: '',
         role: 'user',
         email: '',
         password: '',
@@ -88,7 +97,27 @@ watch(
   { immediate: true }
 )
 
+async function handleFormSubmit(user) {
+  console.log('Form submitted user:', user)
+}
+
 function onSubmit() {
-  emit('saved', { ...localUser.value })
+  if (!localUser.value.firstname) {
+    alert('First name is required');
+    return;
+  }
+  if (!localUser.value.lastname) {
+    alert('Last name is required');
+    return;
+  }
+  emit('saved', {
+    firstname: localUser.value.firstname,
+    lastname: localUser.value.lastname,
+    email: localUser.value.email,
+    role: localUser.value.role,
+    password: localUser.value.password,
+    phoneNumber: localUser.value.phoneNumber,
+    status: localUser.value.status
+  });
 }
 </script>

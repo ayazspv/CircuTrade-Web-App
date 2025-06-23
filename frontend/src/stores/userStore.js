@@ -68,6 +68,7 @@ export const useUserStore = defineStore('users', () => {
 
   const addUser = async (userData) => {
     try {
+      // userData should have: firstname, lastname, role, email, password, phoneNumber, status
       const response = await axios.post('/users/add', userData)
       return response.data
     } catch (err) {
