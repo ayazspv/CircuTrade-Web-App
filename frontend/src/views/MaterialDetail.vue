@@ -10,6 +10,7 @@ const materialStore = useMaterialStore()
 const cartStore = useCartStore()
 const loading = ref(true)
 const material = ref(null)
+const selectedQuantity = ref(1)
 
 const formatPrice = (price) => {
   return new Intl.NumberFormat('nl-NL', {
@@ -27,7 +28,11 @@ onMounted(async () => {
 })
 
 function addToCart() {
-  cartStore.addToCart(material.value)
+  cartStore.addToCart({
+    id: material.value.id,
+    product: { ...material.value },
+    quantity: selectedQuantity.value || 1
+  })
   router.push('/cart')
 }
 </script>
@@ -67,6 +72,16 @@ function addToCart() {
         <div class="mb-4">
           <strong>Date:</strong>
           <span class="fs-5 ms-2">{{ material.date }}</span>
+        </div>
+        <div class="mb-4">
+          <label for="quantity" class="form-label">Select Quantity:</label>
+          <input
+            type="number"
+            id="quantity"
+            v-model="selectedQuantity"
+            min="1"
+            class="form-control"
+          />
         </div>
         <button class="btn btn-gradient px-4 py-2 fs-6" @click="addToCart">
           <i class="fas fa-cart-plus me-2"></i>Add to the cart

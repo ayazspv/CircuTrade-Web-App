@@ -50,7 +50,7 @@ class MaterialController extends BaseController {
     }
 
     public function getMaterialById($id) {
-        $user = $this->getUserFromJwt();
+        //$user = $this->getUserFromJwt();
         $material = $this->materialService->getMaterialById($id);
         if ($material) {
             $this->respond($material);
