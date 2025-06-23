@@ -22,4 +22,8 @@ class OrderService {
     public function getLatestOrder() {
         return $this->orderRepository->getLatestOrder();
     }
+    
+    public function getOrdersByUserId($userId) {
+        return $this->orderRepository->getOrdersByUserId($userId);
+    }
 }

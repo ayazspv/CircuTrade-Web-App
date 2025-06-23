@@ -74,6 +74,17 @@ export const useOrderStore = defineStore('orders', () => {
     }
   };
 
+  const fetchOrdersByUserId = async (userId) => {
+    try {
+      const response = await $axios.get(`/orders/user/${userId}`);
+      orders.value = response.data;
+      return orders.value;
+    } catch (err) {
+      error.value = 'Failed to fetch user orders';
+      return [];
+    }
+  };
+
   return {
     orders,
     latestOrder,
@@ -85,5 +96,6 @@ export const useOrderStore = defineStore('orders', () => {
     fetchOrderItems,
     fetchOrderItemsByOrderId,
     addOrderItem,
+    fetchOrdersByUserId,
   };
 });

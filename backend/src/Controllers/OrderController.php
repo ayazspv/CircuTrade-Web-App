@@ -40,4 +40,15 @@ class OrderController extends BaseController {
             $this->respondWithError(404, "No orders found");
         }
     }
+
+    public function getOrdersByUserId($userId) {
+        $user = $this->getUserFromJwt();
+        // Optionally, only allow users to fetch their own orders or admins
+        if ($user->data->id != $userId && $user->data->role !== 'admin') {
+            $this->respondWithError(403, "Forbidden");
+            return;
+        }
+        $orders = $this->orderService->getOrdersByUserId($userId);
+        $this->respond($orders);
+    }
 }

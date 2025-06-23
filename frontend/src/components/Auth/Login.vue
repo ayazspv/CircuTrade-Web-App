@@ -20,7 +20,7 @@ async function login() {
     } else if (result.userType === 'admin') {
       router.push('/dashboard')
     } else {
-      router.push('/dashboard/userId')
+      router.push('/dashboard/user')
     }
   } else {
     error.value = userStore.error || 'Login failed'

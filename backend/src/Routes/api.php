@@ -12,11 +12,6 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
 
-// Handle preflight OPTIONS request globally
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
 
 // Enable error reporting for debugging
 error_reporting(E_ALL);
@@ -53,6 +48,7 @@ $router->get('/materials/quantities', 'MaterialController@getAllQuantities');
 $router->get('/orders', 'OrderController@getAllOrders');
 $router->post('/orders/add', 'OrderController@addOrder');
 $router->get('/orders/latest', 'OrderController@getLatestOrder');
+$router->get('/orders/user/(\d+)', 'OrderController@getOrdersByUserId');
 
 // Order Items routes
 $router->get('/orderitems', 'OrderItemController@getAllOrderItems');
@@ -61,5 +57,11 @@ $router->get('/orderitems/order/(\d+)', 'OrderItemController@getOrderItemsByOrde
 
 // Test route
 $router->get('/test', 'UserController@test');
+
+// Ping route
+$router->get('/ping', function() {
+    header('Content-Type: application/json');
+    echo json_encode(['pong' => true]);
+});
 
 $router->run();
