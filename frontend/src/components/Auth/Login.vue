@@ -14,6 +14,7 @@ async function login() {
   error.value = ''
   const result = await userStore.login({ email: email.value, password: password.value })
   if (result && result.token) {
+    await userStore.fetchMe() // <-- fetch full user info after login
     const redirect = router.currentRoute.value.query.redirect
     if (redirect) {
       router.push(redirect)

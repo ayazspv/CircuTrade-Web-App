@@ -1,29 +1,14 @@
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
-
-const props = defineProps({
-  menu: {
-    type: Array,
-    required: true
-  }
-})
-
-const userStore = useUserStore()
-const router = useRouter()
-
-function handleLogout() {
-  userStore.logout()
-  router.push('/login')
-}
-</script>
-
 <template>
   <div class="dashboard-layout">
     <aside class="sidebar d-flex flex-column">
       <div class="sidebar-logo d-flex align-items-center justify-content-center mb-4">
         <i class="fas fa-leaf fa-2x text-success"></i>
+      </div>
+      <!-- Minimal User Info -->
+      <div v-if="userStore.user" class="text-center mb-2" style="font-size:1.05rem;">
+        <p>👤 Hello, {{ userStore.user.firstname || userStore.user.email }}</p>
+        <span class="badge bg-secondary">{{ userStore.user.role }}</span>
+        <p>{{ userStore.user.email }}</p>
       </div>
       <!-- Home Button -->
       <div class="w-100 px-3 mb-3">
@@ -60,6 +45,33 @@ function handleLogout() {
   </div>
 </template>
 
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
+
+const props = defineProps({
+  menu: {
+    type: Array,
+    required: true
+  }
+})
+
+const userStore = useUserStore()
+const router = useRouter()
+
+onMounted(async () => {
+  if (!userStore.user) {
+    await userStore.fetchMe()
+  }
+})
+
+function handleLogout() {
+  userStore.logout()
+  router.push('/login')
+}
+</script>
+
 <style scoped>
 .dashboard-layout {
   display: flex;
@@ -93,6 +105,46 @@ function handleLogout() {
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(79,140,255,0.10);
   margin: 0 auto 2rem auto;
+}
+
+.user-info {
+  background: linear-gradient(120deg, #e0e7ef 70%, #f8fafc 100%);
+  border-radius: 18px;
+  padding: 1.2rem 0.5rem 0.7rem 0.5rem;
+  box-shadow: 0 4px 16px rgba(40, 76, 42, 0.09);
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: visible;
+}
+
+.hello-badge {
+  top: -18px;
+  left: 50%;
+  font-size: 2.2rem;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(40, 76, 42, 0.07);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #4f8cff 40%, #27ae60 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bg-gradient-secondary {
+  background: linear-gradient(90deg, #848048 0%, #4f8cff 100%) !important;
+  color: #fff !important;
+  letter-spacing: 1px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 8px;
 }
 
 .sidebar-link {
@@ -129,12 +181,6 @@ function handleLogout() {
   overflow: auto;
   display: flex;
   flex-direction: column;
-}
-
-/* Remove hamburger and sidebar-close styles */
-.sidebar-toggle,
-.sidebar-closed {
-  display: none !important;
 }
 
 @media (max-width: 991.98px) {
