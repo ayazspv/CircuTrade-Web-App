@@ -20,7 +20,7 @@ const ManagerMenu = [
 ]
 
 const UserMenu = [
-  { label: 'Overview', to: '/dashboard/userId', icon: 'fas fa-home' },
+  { label: 'Overview', to: '/dashboard/user', icon: 'fas fa-home' },
 ]
 
 // Decide which menu to use
